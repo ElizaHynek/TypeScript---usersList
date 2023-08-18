@@ -92,6 +92,16 @@ class Message {
   }
 }
 
+function measurePerformance(target: any, name: string, descriptor: any) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+   const start = performance.now()
+   const result = originalMethod.apply(this, args)
+   const finish = performance.now()
+   console.info(`${name} execution time is ${finish - start} milliseconds`)
+   return result;
+ }
+}
 interface User {
 	name: string,
 	age: number
@@ -100,6 +110,7 @@ interface User {
 class UsersData {
 	private data: User[] = [];
 
+  @measurePerformance
 	showAll() {
     Message.showColorized(MessageVariant.Info, 'Users data');
     if (this.data.length > 0) {
@@ -109,6 +120,7 @@ class UsersData {
     }
   }
 
+  @measurePerformance
 	public add(user: User) {
 		if (user.age > 0 && user.name.length > 0) {
 			this.data.push(user);
